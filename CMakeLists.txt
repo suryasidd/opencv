@@ -445,6 +445,8 @@ OCV_OPTION(WITH_TENGINE "Include Arm Inference Tengine support" OFF
 OCV_OPTION(WITH_ONNX "Include Microsoft ONNX Runtime support" OFF
   VISIBLE_IF TRUE
   VERIFY HAVE_ONNX)
+OCV_OPTION(onnxruntime_USE_OPENVINO "Include Microsoft ONNX Runtime Build with OpenVINO support" OFF
+  VISIBLE_IF TRUE)
 
 # OpenCV build components
 # ===================================================
@@ -784,6 +786,10 @@ endif()
 
 if(WITH_ONNX)
   include(cmake/FindONNX.cmake)
+endif()
+
+if(onnxruntime_USE_OPENVINO)
+  add_definitions(-DUSE_OPENVINO)
 endif()
 
 # ----------------------------------------------------------------------------

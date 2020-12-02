@@ -13,6 +13,10 @@
 #include <ade/util/zip_range.hpp>
 #include <opencv2/gapi/infer.hpp>
 #include <opencv2/gapi/own/convert.hpp>
+#ifdef USE_OPENVINO
+#include "onnxruntime/core/providers/openvino/openvino_provider_factory.h"
+#endif
+
 
 #include "api/gbackend_priv.hpp" // FIXME: Make it part of Backend SDK!
 
@@ -491,6 +495,9 @@ ONNXCompiled::ONNXCompiled(const gapi::onnx::detail::ParamDesc &pp)
     // Create and initialize the ONNX session
     Ort::SessionOptions session_options;
     this_env = Ort::Env(ORT_LOGGING_LEVEL_WARNING, "");
+  #ifdef USE_OPENVINO
+    Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_OpenVINO(session_options,""));
+  #endif
     this_session = Ort::Session(this_env, params.model_path.data(), session_options);
     this_memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
 

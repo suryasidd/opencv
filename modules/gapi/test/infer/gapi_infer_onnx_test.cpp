@@ -11,6 +11,9 @@
 #include <stdexcept>
 #include <onnxruntime_cxx_api.h>
 #include <ade/util/iota_range.hpp>
+#ifdef USE_OPENVINO
+#include "onnxruntime/core/providers/openvino/openvino_provider_factory.h"
+#endif
 
 #include <opencv2/gapi/own/convert.hpp>
 #include <opencv2/gapi/infer/onnx.hpp>
@@ -139,7 +142,7 @@ public:
     cv::Mat in_mat1;
 
     ONNXtest() {
-        env = Ort::Env(ORT_LOGGING_LEVEL_WARNING, "test");
+        env = Ort::Env(ORT_LOGGING_LEVEL_INFO, "test");
         memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeDefault);
         out_gapi.resize(1);
         out_onnx.resize(1);
@@ -152,6 +155,10 @@ public:
     void infer(const std::vector<cv::Mat>& ins,
                      std::vector<cv::Mat>& outs) {
         // Prepare session
+
+      #ifdef USE_OPENVINO
+        Ort::ThrowOnError(OrtSessionOptionsAppendExecutionProvider_OpenVINO(session_options,""));
+      #endif
         session = Ort::Session(env, model_path.data(), session_options);
         num_in = session.GetInputCount();
         num_out = session.GetOutputCount();
@@ -266,7 +273,7 @@ public:
 
 TEST_F(ONNXClassificationTest, Infer)
 {
-    useModel("classification/squeezenet/model/squeezenet1.0-9");
+    useModel("classification/resnet/model/resnet50-v1-7");
     // ONNX_API code
     cv::Mat processed_mat;
     preprocess(in_mat1, processed_mat);

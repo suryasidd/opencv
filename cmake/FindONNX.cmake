@@ -14,6 +14,7 @@ if(ONNXRT_ROOT_DIR)
   find_path(ORT_INCLUDE onnxruntime_cxx_api.h
     ${ONNXRT_ROOT_DIR}/include/onnxruntime/core/session
     CMAKE_FIND_ROOT_PATH_BOTH)
+  list(APPEND ORT_INCLUDE ${ONNXRT_ROOT_DIR}/include)
 endif()
 
 if(ORT_LIB AND ORT_INCLUDE)
@@ -26,7 +27,7 @@ if(ORT_LIB AND ORT_INCLUDE)
   set(ONNX_LIBRARY "onnxruntime" CACHE STRING "ONNX Link Target")
   ocv_add_library(${ONNX_LIBRARY} SHARED IMPORTED)
   set_target_properties(${ONNX_LIBRARY} PROPERTIES
-                        INTERFACE_INCLUDE_DIRECTORIES ${ORT_INCLUDE}
+                        INTERFACE_INCLUDE_DIRECTORIES "${ORT_INCLUDE}"
                         IMPORTED_LOCATION ${ORT_LIB}
                         IMPORTED_IMPLIB ${ORT_LIB})
 endif()
