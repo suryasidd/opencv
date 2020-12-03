@@ -279,13 +279,13 @@ TEST_F(ONNXClassificationTest, Infer)
     preprocess(in_mat1, processed_mat);
     infer<float>(processed_mat, out_onnx.front());
     // G_API code
-    G_API_NET(SqueezNet, <cv::GMat(cv::GMat)>, "squeeznet");
+    G_API_NET(Resnet, <cv::GMat(cv::GMat)>, "resnet");
     cv::GMat in;
-    cv::GMat out = cv::gapi::infer<SqueezNet>(in);
+    cv::GMat out = cv::gapi::infer<Resnet>(in);
     cv::GComputation comp(cv::GIn(in), cv::GOut(out));
     // NOTE: We have to normalize U8 tensor
     // so cfgMeanStd() is here
-    auto net = cv::gapi::onnx::Params<SqueezNet> { model_path }.cfgMeanStd({ mean }, { std });
+    auto net = cv::gapi::onnx::Params<Resnet> { model_path }.cfgMeanStd({ mean }, { std });
     comp.apply(cv::gin(in_mat1),
                cv::gout(out_gapi.front()),
                cv::compile_args(cv::gapi::networks(net)));
